@@ -1,34 +1,41 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'MoviesPremiere')</title>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Favicon -->
-<link rel="icon" type="image/png" href="{{ asset('img/logo/favicon.png') }}">
-<link rel="icon" type="image/x-icon" href="{{ asset('img/logo/favicon.ico') }}">
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Tu CSS personalizado -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-</head>
-<body>
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            @include('layouts.navigation')
+          
 
-    {{-- Header global --}}
-    @include('partials.header')
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-    <main>
-        {{-- Aquí se cargará el contenido de cada página --}}
-        @yield('content')
-    </main>
-
-    {{-- Footer global --}}
-    @include('partials.footer')
-
-    <script src="{{ asset('js/app.js') }}"></script><!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+            <!-- Page Content -->
+            <main>
+  @hasSection('content')
+      @yield('content')      {{-- para vistas con @extends/@section --}}
+  @else
+      {{ $slot ?? '' }}      {{-- para componentes <x-app-layout> --}}
+  @endif
+</main>
+        </div>
+    </body>
 </html>
