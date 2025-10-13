@@ -55,4 +55,20 @@ class SolicitudController extends Controller
         $solicitudes = Solicitud::latest()->paginate(20);
         return view('solicitudes.index', compact('solicitudes'));
     }
+
+
+   
+// ...
+
+public function aprobar(Solicitud $solicitud)
+{
+    $solicitud->update(['estado' => 'aprobada']);
+    return back()->with('ok', '✅ Solicitud aprobada');
+}
+
+public function rechazar(Solicitud $solicitud)
+{
+    $solicitud->update(['estado' => 'rechazada']);
+    return back()->with('ok', '⛔ Solicitud rechazada');
+}
 }

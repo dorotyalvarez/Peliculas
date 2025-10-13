@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeliculaController;
 use App\Http\Controllers\SolicitudController;
 
+Route::middleware('auth')->group(function () {
+    Route::patch('/solicitudes/{solicitud}/aprobar', [SolicitudController::class, 'aprobar'])
+        ->name('solicitudes.aprobar');
+    Route::patch('/solicitudes/{solicitud}/rechazar', [SolicitudController::class, 'rechazar'])
+        ->name('solicitudes.rechazar');
+});
+
 // Página principal redirige al listado de películas
 Route::get('/', function () {
     return redirect()->route('peliculas.index');
