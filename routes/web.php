@@ -1,67 +1,63 @@
 <?php
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PanelController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PeliculaController;
 use App\Http\Controllers\SolicitudController;
+use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth')->group(function () {
-    Route::patch('/solicitudes/{solicitud}/aprobar', [SolicitudController::class, 'aprobar'])
-        ->name('solicitudes.aprobar');
-    Route::patch('/solicitudes/{solicitud}/rechazar', [SolicitudController::class, 'rechazar'])
-        ->name('solicitudes.rechazar');
+// Home -> listado
+Route::get('/', fn () => redirect()->route('peliculas.index'));
+
+// Categorías públicas
+Route::get('/peliculas/animadas', [PeliculaController::class, 'animadas'])->name('peliculas.animadas');
+Route::get('/peliculas/cartoon',  [PeliculaController::class, 'cartoon'])->name('peliculas.cartoon');
+Route::get('/peliculas/normal',   [PeliculaController::class, 'normal'])->name('peliculas.normal');
+
+// Ver detalle
+Route::get('/peliculas/{id}/ver', [PeliculaController::class, 'ver'])->name('peliculas.ver');
+
+// Alias para el formulario de solicitud (apunta al controlador correcto)
+Route::get('/peliculas/solicitar', fn () => redirect()->route('solicitudes.create'))->name('peliculas.solicitar');
+
+// Solicitudes (público crea)
+Route::get('/solicitudes/nueva', [SolicitudController::class, 'create'])->name('solicitudes.create');
+Route::post('/solicitudes',      [SolicitudController::class, 'store'])->name('solicitudes.store');
+
+// Panel y acciones de admin
+Route::middleware(['auth', IsAdmin::class])->group(function () {
+    Route::get('/panel', [PanelController::class, 'index'])->name('panel');
+    Route::patch('/solicitudes/{solicitud}/aprobar',  [SolicitudController::class, 'aprobar'])->name('solicitudes.aprobar');
+    Route::patch('/solicitudes/{solicitud}/rechazar', [SolicitudController::class, 'rechazar'])->name('solicitudes.rechazar');
 });
 
-// Página principal redirige al listado de películas
-Route::get('/', function () {
-    return redirect()->route('peliculas.index');
+// Verificador
+Route::middleware(['auth', RoleMiddleware::class.':verificador'])
+    ->get('/verificaciones', [\App\Http\Controllers\VerificadorController::class, 'index'])
+    ->name('verificador.panel');
+
+// Publicador
+Route::middleware(['auth', RoleMiddleware::class.':publicador'])->group(function () {
+    Route::get('/publicaciones', [\App\Http\Controllers\PublicadorController::class, 'index'])->name('publicador.panel');
+    Route::get('/publicar/{solicitud}', [\App\Http\Controllers\PublicadorController::class, 'createFromSolicitud'])->name('publicador.publicar.form');
+    Route::post('/publicar/{solicitud}', [\App\Http\Controllers\PublicadorController::class, 'storeFromSolicitud'])->name('publicador.publicar.store');
 });
-
-
-// Rutas personalizadas de películas
-Route::get('/peliculas/animadas', [PeliculaController::class, 'animadas'])
-    ->name('peliculas.animadas');
-
-Route::get('/peliculas/cartoon', [PeliculaController::class, 'cartoon'])
-    ->name('peliculas.cartoon');
-
-Route::get('/peliculas/normal', [PeliculaController::class, 'normal'])
-    ->name('peliculas.normal');
-    
-Route::get('/peliculas/solicitar', [PeliculaController::class, 'solicitar'])
-    ->name('peliculas.solicitar');
     
 
 
-Route::get('/peliculas/{id}/ver', [PeliculaController::class, 'ver'])
-    ->name('peliculas.ver');
-
-// Recurso REST de películas (debe ir al final)
+// Recurso REST (al final)
 Route::resource('peliculas', PeliculaController::class);
 
-// Ruta home
-Route::get('/home', function () {
-    return view('home.home');
-})->name('home');
+// Otros
+Route::get('/home', fn () => view('home.home'))->name('home');
+Route::get('/test', fn () => view('test'));
 
-// Ruta test
-Route::get('/test', function () {
-    return view('test');
+// Breeze/Auth
+Route::get('/dashboard', fn () => view('dashboard'))->middleware(['auth'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-// Ruta para ver el formulario de solicitud
-Route::get('/solicitudes/nueva', [SolicitudController::class, 'create'])
-    ->name('solicitudes.create');
-
-// Ruta para guardar la solicitud
-Route::post('/solicitudes', [SolicitudController::class, 'store'])
-    ->name('solicitudes.store');
-
-// Ruta temporal de dashboard (para Breeze)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
-Route::middleware('auth')->get('/panel', [PanelController::class, 'index'])->name('panel');
-
 require __DIR__.'/auth.php';

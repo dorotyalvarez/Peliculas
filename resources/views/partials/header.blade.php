@@ -86,9 +86,16 @@
                        
                     </form>
                 @endauth
-                 @auth
-                       <a href="{{ route('panel') }}" class="btn btn-sm btn-outline-warning ms-2">Panel</a>
-                @endauth
+               @auth
+  @if(auth()->user()->role === 'admin')
+    <a href="{{ route('panel') }}" class="btn btn-sm btn-outline-warning ms-2">Panel Admin</a>
+  @elseif(auth()->user()->role === 'verificador')
+    <a href="{{ route('verificador.panel') }}" class="btn btn-sm btn-outline-warning ms-2">Verificador</a>
+  @elseif(auth()->user()->role === 'publicador')
+    <a href="{{ route('publicador.panel') }}" class="btn btn-sm btn-outline-warning ms-2">Publicador</a>
+  @endif
+@endauth
+
 
                 @guest
                     <a href="{{ route('login') }}" class="btn btn-sm btn-outline-warning">Login</a>

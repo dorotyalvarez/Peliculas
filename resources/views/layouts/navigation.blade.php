@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('peliculas.index') }}">
+                    <a href="{{ route('dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
@@ -19,6 +19,21 @@
                     <x-nav-link :href="route('peliculas.solicitar')" :active="request()->routeIs('peliculas.solicitar')">
                         {{ __('Solicitar') }}
                     </x-nav-link>
+                     @auth
+                      @if(auth()->user()->role === 'admin')
+                          <x-nav-link :href="route('panel')" :active="request()->routeIs('panel')">
+                              {{ __('Panel Admin') }}
+                          </x-nav-link>
+                      @elseif(auth()->user()->role === 'verificador')
+                          <x-nav-link :href="route('verificador.panel')" :active="request()->routeIs('verificador.panel')">
+                              {{ __('Verificador') }}
+                          </x-nav-link>
+                      @elseif(auth()->user()->role === 'publicador')
+                          <x-nav-link :href="route('publicador.panel')" :active="request()->routeIs('publicador.panel')">
+                              {{ __('Publicador') }}
+                          </x-nav-link>
+                      @endif
+                 @endauth
                 </div>
             </div>
 
@@ -42,6 +57,23 @@
                                 <x-dropdown-link :href="route('profile.edit')">
                                     {{ __('Perfil') }}
                                 </x-dropdown-link>
+
+                                {{-- Verificar correo (si está habilitado) --}}
+                                @if (Route::has('verification.notice'))
+                                    <x-dropdown-link :href="route('verification.notice')">
+                                        {{ __('Verificar correo') }}
+                                    </x-dropdown-link>
+                                @endif
+
+                                {{-- Cambiar contraseña (sección dentro de /profile) --}}
+                                <x-dropdown-link :href="route('profile.edit') . '#password'">
+                                    {{ __('Cambiar contraseña') }}
+                                </x-dropdown-link>
+
+                                {{-- Eliminar cuenta (sección dentro de /profile) --}}
+                                <x-dropdown-link :href="route('profile.edit') . '#delete'">
+                                    {{ __('Eliminar cuenta') }}
+                                </x-dropdown-link>
                             @endif
 
                             <!-- Logout -->
@@ -58,8 +90,13 @@
 
                 @guest
                     <a href="{{ route('login') }}" class="inline-flex items-center px-3 py-2 text-sm rounded-md text-gray-700 hover:text-gray-900">
-                        Iniciar sesión
+                        {{ __('Iniciar sesión') }}
                     </a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="ms-2 inline-flex items-center px-3 py-2 text-sm rounded-md text-gray-700 hover:text-gray-900">
+                            {{ __('Registrarse') }}
+                        </a>
+                    @endif
                 @endguest
             </div>
 
@@ -100,6 +137,20 @@
                         <x-responsive-nav-link :href="route('profile.edit')">
                             {{ __('Perfil') }}
                         </x-responsive-nav-link>
+
+                        @if (Route::has('verification.notice'))
+                            <x-responsive-nav-link :href="route('verification.notice')">
+                                {{ __('Verificar correo') }}
+                            </x-responsive-nav-link>
+                        @endif
+
+                        <x-responsive-nav-link :href="route('profile.edit') . '#password'">
+                            {{ __('Cambiar contraseña') }}
+                        </x-responsive-nav-link>
+
+                        <x-responsive-nav-link :href="route('profile.edit') . '#delete'">
+                            {{ __('Eliminar cuenta') }}
+                        </x-responsive-nav-link>
                     @endif
 
                     <form method="POST" action="{{ route('logout') }}">
@@ -114,8 +165,13 @@
 
             @guest
                 <div class="px-4 py-2">
-                    <a href="{{ route('login') }}" class="text-gray-700">Iniciar sesión</a>
+                    <a href="{{ route('login') }}" class="text-gray-700">{{ __('Iniciar sesión') }}</a>
                 </div>
+                @if (Route::has('register'))
+                    <div class="px-4 py-2">
+                        <a href="{{ route('register') }}" class="text-gray-700">{{ __('Registrarse') }}</a>
+                    </div>
+                @endif
             @endguest
         </div>
     </div>

@@ -10,8 +10,16 @@ class Pelicula extends Model
     use HasFactory;
 
 protected $fillable = [
-    'titulo', 'descripcion', 'anio', 'imagen', 'trailer',
-    'video_url', 'video_backup', 'categoria'
+    'titulo',
+    'genero',
+    'descripcion',
+    'anio',
+    'categoria',
+    'imagen',
+    'banner',        // 👈 este
+    'trailer',
+    'video_url',
+    'video_backup',
 ];
 
 }
