@@ -63,39 +63,36 @@
 
 <!-- tarjetas con datos de la base de datos -->
 <div class="container my-5">
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
-        @forelse($peliculas as $pelicula)
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 tarjeta-pelicula" style="max-width: 160px; margin: auto;">
-                    <div class="img-container">
-                        <img src="{{ $pelicula->imagen ?? 'https://via.placeholder.com/200x300?text=Sin+Imagen' }}" 
-                             class="card-img-top rounded"
-                             alt="{{ $pelicula->titulo }}">
-                    </div>
-                    <div class="card-body text-center p-2">
-                        <h6 class="card-title mb-2 text-truncate" style="font-size: 0.85rem;" title="{{ $pelicula->titulo }}">
-                            {{ $pelicula->titulo }}
-                        </h6>
-                        <a href="{{ route('peliculas.show', $pelicula->id) }}" 
-                           class="btn btn-sm btn-warning w-100">
-                            🎬 Ver
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @empty
-         <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 10vh; background: #111;">
-        <div class="text-center p-5 bg-dark rounded shadow-lg border border-warning">
-            <img src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png" 
-                 alt="Sin resultados" width="120" class="mb-4 opacity-75">
-            <h2 class="text-warning mb-3">😢 No se encontraron resultados</h2>
-            <p class="text-light">Prueba con otro <strong>título</strong>, <strong>categoría</strong> o <strong>descripción</strong>.</p>
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+    @forelse($peliculas as $pelicula)
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0 tarjeta-pelicula" style="max-width:160px;margin:auto;">
+          <div class="img-container">
+            <img
+              src="{{ $pelicula->poster_url ?? 'https://via.placeholder.com/200x300?text=Sin+Imagen' }}"
+              class="card-img-top rounded"
+              alt="{{ $pelicula->titulo }}"
+            >
+          </div>
+          <div class="card-body text-center p-2">
+            <h6 class="card-title mb-2 text-truncate" style="font-size:.85rem;" title="{{ $pelicula->titulo }}">
+              {{ $pelicula->titulo }}
+            </h6>
+            <a href="{{ route('peliculas.show', $pelicula->id) }}" class="btn btn-sm btn-warning w-100">🎬 Ver</a>
+          </div>
         </div>
-    </div>
-
-   
-        @endforelse
-    </div>
+      </div>
+    @empty
+      <!-- tu bloque de “sin resultados” igualito -->
+      <div class="container-fluid d-flex justify-content-center align-items-center" style="min-height:10vh;background:#111;">
+        <div class="text-center p-5 bg-dark rounded shadow-lg border border-warning">
+          <img src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png" alt="Sin resultados" width="120" class="mb-4 opacity-75">
+          <h2 class="text-warning mb-3">😢 No se encontraron resultados</h2>
+          <p class="text-light">Prueba con otro <strong>título</strong>, <strong>categoría</strong> o <strong>descripción</strong>.</p>
+        </div>
+      </div>
+    @endforelse
+  </div>
 </div>
 
 <style>

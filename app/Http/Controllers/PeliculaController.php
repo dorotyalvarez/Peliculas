@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pelicula;
-use Illuminate\Support\Facades\Storage;
 
 class PeliculaController extends Controller
 {
-    // LISTADO + BÚSQUEDA
+    /**
+     * LISTADO + BÚSQUEDA
+     */
     public function index(Request $request)
     {
         $peliculas = Pelicula::query()
@@ -25,49 +26,62 @@ class PeliculaController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('welcome', ['peliculas' => $peliculas]);
+        return view('welcome', compact('peliculas'));
     }
 
-    // SHOW
-    public function show($id)
-    {
-        $pelicula = Pelicula::findOrFail($id);
-        return view('peliculas.show', compact('pelicula'));
-    }
+    /**
+     * DETALLE (SHOW)
+     * Usa route model binding.
+     */
+ public function show(Pelicula $pelicula)   // ← binding para {pelicula}
+{
+    return view('peliculas.show', compact('pelicula'));
+}
 
-    // VER PERSONALIZADO
-    public function ver($id)
-    {
-        $pelicula = Pelicula::findOrFail($id);
-        return view('peliculas.ver', compact('pelicula'));
-    }
+public function ver($id)                   // ← {id} simple
+{
+    $pelicula = Pelicula::findOrFail($id);
+    return view('peliculas.ver', compact('pelicula'));
+}
 
-    // FILTROS
+    /**
+     * FILTROS POR CATEGORÍA
+     */
     public function animadas()
     {
-        $peliculas = Pelicula::where('categoria', 'Animada')->get();
+        $peliculas = Pelicula::where('categoria', 'Animada')
+            ->latest('id')->get();
+
         return view('peliculas.animadas', compact('peliculas'));
     }
 
     public function cartoon()
     {
-        $peliculas = Pelicula::where('categoria', 'Cartoon')->get();
+        $peliculas = Pelicula::where('categoria', 'Cartoon')
+            ->latest('id')->get();
+
         return view('peliculas.cartoon', compact('peliculas'));
     }
 
     public function normal()
     {
-        $peliculas = Pelicula::where('categoria', 'Normal')->get();
+        $peliculas = Pelicula::where('categoria', 'Normal')
+            ->latest('id')->get();
+
         return view('peliculas.normal', compact('peliculas'));
     }
 
-    // --- SOLICITAR PELÍCULA ---
-
-    // GET: muestra el formulario
+    /**
+     * FORMULARIO DE SOLICITUD (si lo quieres aquí)
+     * Nota: La creación/guardado de solicitudes lo maneja SolicitudController.
+     */
     public function solicitar()
     {
         return view('peliculas.solicitar');
     }
+    // PeliculaController.php
 
- 
+
+
+
 }

@@ -13,7 +13,19 @@
     <div class="col-lg-8">
       <div class="card bg-dark text-light">
         <div class="card-body">
-          <form method="POST" action="{{ route('publicador.publicar.store', $solicitud) }}">
+
+          {{-- errores de validación --}}
+          @if ($errors->any())
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
+
+          <form method="POST" action="{{ route('publicador.publicar.store', $solicitud) }}" enctype="multipart/form-data">
             @csrf
 
             <div class="row">
@@ -49,20 +61,62 @@
                 <input type="url" name="trailer" class="form-control" value="{{ old('trailer', $data['trailer']) }}">
               </div>
               <div class="col-md-6 mb-3">
-                <label class="form-label">Video principal (URL)</label>
-                <input type="url" name="video_url" class="form-control" value="{{ old('video_url', $data['video_url']) }}">
+                <label class="form-label">Video principal (URL externa)</label>
+                <input type="url" name="video_url" class="form-control" value="{{ old('video_url', $data['video_url']) }}" placeholder="https://... (opcional)">
+              </div>
+            </div>
+
+            {{-- NUEVO: subir archivo de video local --}}
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label">Subir archivo de video (opcional)</label>
+                <input type="file" name="video_file" class="form-control" accept="video/mp4,video/webm,video/ogg">
+                <div class="form-text">
+                  Se guardará en <code>storage/app/public/videos</code> → URL pública <code>/storage/videos/...</code>.
+                  Si subes archivo, el reproductor usará ese video local (tiene prioridad sobre la URL externa).
+                </div>
+              </div>
+            </div>
+            
+{{-- 🔁 NUEVO: backup por URL --}}
+<div class="row">
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Video backup (URL externa)</label>
+    <input type="url" name="video_backup" class="form-control" value="{{ old('video_backup') }}" placeholder="https://... (opcional)">
+  </div>
+
+  {{-- (Opcional) backup como archivo local --}}
+  <div class="col-md-6 mb-3">
+    <label class="form-label">Subir archivo de video (backup) (opcional)</label>
+    <input type="file" name="video_backup_file" class="form-control" accept="video/mp4,video/webm,video/ogg">
+    <div class="form-text">
+      Si subes un archivo aquí, se usará como fuente alternativa. Quedará en <code>/storage/videos/...</code>
+    </div>
+  </div>
+</div>
+
+            {{-- (opcionales) permitir reemplazar imágenes al publicar --}}
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Poster (archivo)</label>
+                <input type="file" name="poster" class="form-control" accept="image/*">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Banner (archivo)</label>
+                <input type="file" name="banner" class="form-control" accept="image/*">
               </div>
             </div>
 
             <div class="row">
               <div class="col-md-6 mb-3">
-                <label class="form-label">Video backup (URL)</label>
-                <input type="url" name="video_backup" class="form-control" value="{{ old('video_backup', $data['video_backup']) }}">
-              </div>
-              <div class="col-md-6 mb-3">
                 <label class="form-label">Poster origen (solo lectura)</label>
                 <input type="text" class="form-control" value="{{ $solicitud->poster_path ?? '—' }}" disabled>
-                <div class="form-text">Se copiará a <code>storage/app/public/posters</code></div>
+                <div class="form-text">Se copiará a <code>publicar/posters</code> si no subes uno nuevo.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Banner origen (solo lectura)</label>
+                <input type="text" class="form-control" value="{{ $solicitud->banner_path ?? '—' }}" disabled>
+                <div class="form-text">Se copiará a <code>publicar/banners</code> si no subes uno nuevo.</div>
               </div>
             </div>
 

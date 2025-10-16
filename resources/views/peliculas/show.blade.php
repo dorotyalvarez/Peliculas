@@ -7,8 +7,8 @@
     <div class="row">
         <!-- Poster grande -->
         <div class="col-md-4">
-            <img src="{{ asset($pelicula->imagen) }}" 
-                 alt="Poster de {{ $pelicula->titulo }}" 
+            <img src="{{ $pelicula->poster_url ?? 'https://via.placeholder.com/600x900?text=Sin+Imagen' }}"
+                 alt="Poster de {{ $pelicula->titulo }}"
                  class="img-fluid rounded shadow">
         </div>
 
@@ -16,16 +16,16 @@
         <div class="col-md-8">
             <h2>{{ $pelicula->titulo }}</h2>
             <p class="text-muted">
-                Género: {{ $pelicula->genero ?? 'no tiene' }} | 
+                Género: {{ $pelicula->genero ?? 'no tiene' }} |
                 Año: {{ $pelicula->anio }}
             </p>
             <p>{{ $pelicula->descripcion }}</p>
 
-            <!-- Tráiler (YouTube embed o fallback) -->
             @php
                 $raw = $pelicula->trailer ?? '';
                 $embedUrl = null;
                 $youtubeWatch = null;
+
                 if (!empty($raw)) {
                     if (preg_match('/youtu\.be\/([^\?\/\&]+)/', $raw, $m)) {
                         $id = $m[1];
@@ -53,7 +53,7 @@
                             loading="lazy"></iframe>
                 </div>
                 <p class="small text-muted">
-                    Si no ves el reproductor, 
+                    Si no ves el reproductor,
                     <a href="{{ $youtubeWatch }}" target="_blank" rel="noopener">
                         mirar en YouTube
                     </a>.
@@ -68,9 +68,11 @@
                 </div>
             @endif
 
-            <!-- Botón futuro para ver la película completa -->
-            
-            <a href="{{ route('peliculas.ver', $pelicula->id) }}" class="btn btn-warning">🎬 Ver película</a>
+            <!-- Botón para ver la película -->
+            {{-- ✅ pasa el MODELO, no el id --}}
+            <a href="{{ route('peliculas.ver', ['id' => $pelicula->id]) }}" class="btn btn-warning">
+  🎬 Ver película
+</a>
         </div>
     </div>
 </main>
