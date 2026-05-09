@@ -121,7 +121,23 @@
             </div>
 
             <div class="d-flex justify-content-end">
-              <button class="btn btn-warning">Publicar ahora</button>
+              <button class="btn btn-warning" id="btnPublicar">Publicar ahora</button>
+
+{{-- Barra de progreso --}}
+<div id="progressWrapper" class="mt-3" style="display:none;">
+  <div class="d-flex justify-content-between text-light mb-1">
+    <small>Subiendo video...</small>
+    <small id="progressPercent">0%</small>
+  </div>
+  <div class="progress">
+    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+         role="progressbar" style="width: 0%"></div>
+  </div>
+  <small class="text-secondary" id="progressSize"></small>
+  <div> 
+  <small class="text-secondary" id="progressTime"></small>
+  </div>
+</div>
             </div>
           </form>
         </div>
@@ -143,4 +159,69 @@
     </div>
   </div>
 </div>
+
+<script>
+document.getElementById('btnPublicar').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const form = this.closest('form');
+    const formData = new FormData(form);
+    const wrapper = document.getElementById('progressWrapper');
+    const bar = document.getElementById('progressBar');
+    const percent = document.getElementById('progressPercent');
+    const size = document.getElementById('progressSize');
+    const timeLeft = document.getElementById('progressTime');
+
+    wrapper.style.display = 'block';
+    this.disabled = true;
+    this.textContent = 'Subiendo...';
+
+    let startTime = null;
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+            if (!startTime) startTime = Date.now();
+
+            const pct = Math.round((e.loaded / e.total) * 100);
+            const mb = (e.loaded / 1024 / 1024).toFixed(1);
+            const total = (e.total / 1024 / 1024).toFixed(1);
+
+            // Tiempo restante
+            const elapsed = (Date.now() - startTime) / 1000;
+            const speed = e.loaded / elapsed;
+            const remaining = (e.total - e.loaded) / speed;
+
+            const mins = Math.floor(remaining / 60);
+            const secs = Math.floor(remaining % 60);
+            const tiempoTexto = mins > 0
+                ? `${mins} min ${secs} seg restantes`
+                : `${secs} seg restantes`;
+
+            bar.style.width = pct + '%';
+            percent.textContent = pct + '%';
+            size.textContent = mb + ' MB de ' + total + ' MB';
+            timeLeft.textContent = tiempoTexto;
+        }
+    });
+
+    xhr.addEventListener('load', function() {
+        if (xhr.status === 200 || xhr.status === 302) {
+            window.location.href = xhr.responseURL;
+        } else {
+            alert('Error al publicar. Código: ' + xhr.status);
+            document.getElementById('btnPublicar').disabled = false;
+            document.getElementById('btnPublicar').textContent = 'Publicar ahora';
+        }
+    });
+
+    xhr.addEventListener('error', function() {
+        alert('Error de conexión al subir el video.');
+    });
+
+    xhr.open('POST', form.action);
+    xhr.send(formData);
+});
+</script>
 @endsection

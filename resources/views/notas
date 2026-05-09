@@ -1,0 +1,5 @@
+Para solucionar el tamaño
+Veo que llega al 100% pero igual da 413. El problema es que php artisan serve tiene un límite interno que no respeta el php.ini.
+Corre esto en la terminal:
+bashphp -d upload_max_filesize=4G -d post_max_size=4G artisan serve
+Detén primero el servidor actual con Ctrl+C y luego córrelo con ese comando. 🔧

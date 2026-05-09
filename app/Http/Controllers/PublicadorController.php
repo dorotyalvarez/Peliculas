@@ -60,8 +60,8 @@ class PublicadorController extends Controller
     'video_url'    => ['nullable', 'url'],      // principal externa
     'video_backup' => ['nullable', 'url'],      // 🔁 backup externa
 
-    'video_file'        => ['nullable','file','mimetypes:video/mp4,video/webm,video/ogg','max:512000'], // principal local
-    'video_backup_file' => ['nullable','file','mimetypes:video/mp4,video/webm,video/ogg','max:512000'], // 🔁 backup local
+    'video_file'        => ['nullable','file','mimetypes:video/mp4,video/webm,video/ogg','max:4194304'], // principal local
+    'video_backup_file' => ['nullable','file','mimetypes:video/mp4,video/webm,video/ogg','max:4194304'], // 🔁 backup local
 
     'poster'       => ['nullable','image','mimes:jpg,jpeg,png,webp','max:4096'],
     'banner'       => ['nullable','image','mimes:jpg,jpeg,png,webp','max:6144'],
